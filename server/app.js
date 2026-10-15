@@ -4,7 +4,11 @@ import { resolve } from 'node:path';
 import { config } from './config.js';
 import { loadSession } from './middleware/auth.js';
 import { apiNotFound, errorHandler } from './middleware/errors.js';
+import { requireJsonBody } from './middleware/json-only.js';
+import { requireSameOrigin } from './middleware/origin-check.js';
+import { createRateLimiter } from './middleware/rate-limit.js';
 import { requestContext } from './middleware/request-context.js';
+import { securityHeaders } from './middleware/security-headers.js';
 import { createBookingRouter } from './routes/bookings.js';
 import { createCatalogRouter } from './routes/catalog.js';
 import { createHealthRouter } from './routes/health.js';
@@ -18,9 +22,34 @@ function noStore(_request, response, next) {
   next();
 }
 
-function mountApi(app, database) {
+function createLimiters() {
+  return {
+    sessions: createRateLimiter({
+      windowMs: 10 * 60 * 1000,
+      max: config.demoSessionLimit,
+      message: 'Terlalu banyak percobaan masuk demo. Coba lagi beberapa menit lagi.',
+    }),
+    api: createRateLimiter({
+      windowMs: 60 * 1000,
+      max: config.apiRateLimit,
+      message: 'Terlalu banyak permintaan. Tunggu sebentar lalu coba lagi.',
+    }),
+  };
+}
+
+// Urutan: no-store & batas per IP, origin, JSON wajib, parsing ≤100 KB, sesi, router.
+function mountApiGuards(app) {
+  const limiters = createLimiters();
   app.use('/api', noStore);
+  app.use('/api', limiters.api);
+  app.use('/api', requireSameOrigin);
+  app.use('/api', requireJsonBody);
+  app.post('/api/demo/sessions', limiters.sessions);
   app.use('/api', express.json({ limit: '100kb' }));
+}
+
+function mountApi(app, database) {
+  mountApiGuards(app);
   app.use('/api', createHealthRouter(database));
   app.use('/api', loadSession(database));
   app.use('/api', createSessionRouter(database));
@@ -56,6 +85,7 @@ export function createApp(database) {
   app.disable('x-powered-by');
   app.set('trust proxy', config.trustProxy);
   app.use(requestContext);
+  app.use(securityHeaders);
   mountApi(app, database);
   mountFrontend(app);
   app.use(errorHandler);

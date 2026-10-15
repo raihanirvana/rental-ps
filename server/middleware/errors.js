@@ -7,6 +7,16 @@ const bodyErrors = {
     code: 'BODY_TOO_LARGE',
     message: 'Ukuran JSON maksimal 100 KB.',
   },
+  'charset.unsupported': {
+    status: 415,
+    code: 'UNSUPPORTED_CHARSET',
+    message: 'Encoding karakter JSON tidak didukung.',
+  },
+  'encoding.unsupported': {
+    status: 415,
+    code: 'UNSUPPORTED_ENCODING',
+    message: 'Kompresi body tidak didukung.',
+  },
 };
 
 const databaseBusy = {
@@ -68,18 +78,36 @@ function describeError(error) {
     const { status, code, message, fields } = error;
     return { status, code, message, fields };
   }
+  if (error instanceof URIError && error.status === 400) {
+    return { status: 400, code: 'INVALID_URL', message: 'URL permintaan tidak valid.' };
+  }
   const databaseError = error.code === 'ERR_SQLITE_ERROR' ? describeDatabaseError(error) : null;
-  return databaseError ?? bodyErrors[error.type] ?? internalError;
+  const invalidBody =
+    error.status === 400
+      ? { status: 400, code: 'INVALID_BODY', message: 'Body permintaan tidak valid.' }
+      : null;
+  return databaseError ?? bodyErrors[error.type] ?? invalidBody ?? internalError;
 }
 
-export function errorHandler(error, request, response, _next) {
-  const { status, code, message, fields } = describeError(error);
-  if (status >= 500) {
-    console.error(`[${request.requestId}] ${error.message}`);
-  }
+function setRetryAfter(error, code, response) {
   if (code === 'DATABASE_BUSY') {
     response.set('Retry-After', '1');
   }
+  if (Number.isInteger(error.retryAfter)) {
+    response.set('Retry-After', String(error.retryAfter));
+  }
+}
+
+export function errorHandler(error, request, response, next) {
+  if (response.headersSent) {
+    next(error);
+    return;
+  }
+  const { status, code, message, fields } = describeError(error);
+  if (status >= 500) {
+    console.error(`[${request.requestId}] ${code}`);
+  }
+  setRetryAfter(error, code, response);
   response.status(status).json({
     error: { code, message, ...(fields ? { fields } : {}), requestId: request.requestId },
   });

@@ -1,6 +1,7 @@
 # PRD — Sesi Play
 
-Versi 1.0 · 15 Oktober 2026 · Status: rencana demo portfolio, belum diimplementasikan.
+Versi 1.1 · 15 Oktober 2026 · Status: fitur demo dan review integrasi lokal selesai;
+belum deployment publik.
 
 ## 1. Ringkasan
 

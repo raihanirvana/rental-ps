@@ -3,7 +3,11 @@ import { insertSeededWorkspace } from '../database/seed/index.js';
 import { withTransaction } from '../database/transaction.js';
 import { HttpError } from '../lib/http-error.js';
 import { insertSession, revokeSession } from '../repositories/session-repository.js';
-import { deleteExpiredWorkspaces, deleteWorkspace } from '../repositories/workspace-repository.js';
+import {
+  countActiveWorkspaces,
+  deleteExpiredWorkspaces,
+  deleteWorkspace,
+} from '../repositories/workspace-repository.js';
 import {
   demoRoles,
   findSessionByToken,
@@ -13,8 +17,19 @@ import {
 
 const minuteInMs = 60 * 1000;
 
-function openWorkspace(database, now, ttlMinutes) {
+// Dalam transaksi login (BEGIN IMMEDIATE): kapasitas diperiksa atomik setelah membersihkan
+// workspace kedaluwarsa. Ganti peran tidak melewati jalur ini sehingga tetap bisa saat penuh.
+function assertCapacity(database, nowIso, maxWorkspaces) {
+  if (countActiveWorkspaces(database, nowIso) >= maxWorkspaces) {
+    const error = new HttpError(503, 'DEMO_CAPACITY', 'Ruang demo sedang penuh. Coba lagi nanti.');
+    error.retryAfter = 600;
+    throw error;
+  }
+}
+
+function openWorkspace(database, now, ttlMinutes, maxWorkspaces) {
   deleteExpiredWorkspaces(database, now.toISOString());
+  assertCapacity(database, now.toISOString(), maxWorkspaces);
   const workspaceId = randomUUID();
   const expiresAt = new Date(now.getTime() + ttlMinutes * minuteInMs);
   insertSeededWorkspace(database, { workspaceId, now, expiresAt });
@@ -73,13 +88,14 @@ function assertNotRevoked(sessionProblem) {
 }
 
 // Login baru: workspace, seed dan sesi dalam satu transaksi BEGIN IMMEDIATE.
-export function startDemoSession(database, { role, currentAuth, sessionProblem, ttlMinutes }) {
+export function startDemoSession(database, options) {
+  const { role, currentAuth, sessionProblem, ttlMinutes, maxWorkspaces } = options;
   assertNotRevoked(sessionProblem);
   return withTransaction(database, () => {
     const now = new Date();
     const workspace = currentAuth
       ? switchWorkspace(database, currentAuth, now)
-      : openWorkspace(database, now, ttlMinutes);
+      : openWorkspace(database, now, ttlMinutes, maxWorkspaces);
     const { token, session } = issueSession(database, workspace, role, now.toISOString());
     return { token, auth: toAuth(session, workspace), workspaceCreated: !currentAuth };
   });

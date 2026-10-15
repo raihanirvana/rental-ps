@@ -1,7 +1,7 @@
 # Backlog Sesi Play
 
 13 tiket untuk demo booking rental PS **di tempat**, dikerjakan satu per satu.
-RPS-001–RPS-011 **Selesai**. Tiket lain masih **Belum dimulai**.
+RPS-001–RPS-012 **Selesai**. Tiket lain masih **Belum dimulai**.
 
 Baca [PRD](../../PRD.md) dan [AGENTS.md](../../AGENTS.md) sebelum mulai.
 Stack rencana: React + Vite, CSS, Express, SQLite, JavaScript ESM.
@@ -26,7 +26,7 @@ meski prioritas berbeda; jangan melewati pengujian integrasi sebelum deployment.
 | [RPS-009](RPS-009.md) | Agenda pemilik dan penyelesaian sesi | P0 | RPS-005, RPS-006 | Selesai |
 | [RPS-010](RPS-010.md) | Pengelolaan unit dan blok jadwal | P0 | RPS-004, RPS-009 | Selesai |
 | [RPS-011](RPS-011.md) | Pengaturan usaha dan reset demo | P1 | RPS-008, RPS-010 | Selesai |
-| [RPS-012](RPS-012.md) | Integrasi, keamanan dan kesiapan demo | P0 | RPS-007, RPS-008, RPS-009, RPS-010, RPS-011 | Belum dimulai |
+| [RPS-012](RPS-012.md) | Integrasi, keamanan dan kesiapan demo | P0 | RPS-007, RPS-008, RPS-009, RPS-010, RPS-011 | Selesai |
 | [RPS-013](RPS-013.md) | Deployment gratis dan panduan presentasi | P1 | RPS-012 | Belum dimulai |
 
 ## Pembagian tahap

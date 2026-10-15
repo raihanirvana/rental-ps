@@ -1,8 +1,8 @@
 # Sesi Play — demo booking rental PlayStation
 
 Proyek portfolio dan contoh jasa pembuatan website untuk bisnis rental PS.
-Tahap saat ini: **RPS-011 selesai** (seluruh fitur demo pelanggan dan pemilik).
-Berikutnya integrasi/keamanan (RPS-012) dan deployment (RPS-013).
+Tahap saat ini: **RPS-012 selesai** (fitur lengkap, keamanan dan verifikasi integrasi).
+Berikutnya deployment demo gratis (RPS-013); belum ada URL publik.
 
 Model yang sudah dipilih pemilik: pelanggan **main di tempat**, booking unit PS/bilik
 per jam. Model dibawa pulang/sewa harian berada di luar cakupan MVP.
@@ -13,6 +13,8 @@ per jam. Model dibawa pulang/sewa harian berada di luar cakupan MVP.
 - [Acuan desain](DESIGN.md): tiga prototype visual dan panduan implementasi untuk Claude.
 - [Backlog](docs/tickets/README.md): 13 tiket berurutan dengan dependensi dan verifikasi.
 - [Aturan proyek](AGENTS.md): satu tiket per tahap, fungsi maksimal 25 baris, tanpa unit test.
+- [Kontrak API](docs/API.md), [Database](docs/DATABASE.md) dan
+  [Verifikasi & hasil nyata](docs/VERIFICATION.md).
 
 ## Arah demo
 
@@ -68,11 +70,34 @@ npm start               # http://127.0.0.1:3001
 | `npm run lint` | ESLint, termasuk batas 25 baris per fungsi dan 100 karakter per baris |
 | `npm run format` / `format:check` | Prettier tulis / periksa |
 | `npm run check` | Format check, lint dan build. Proyek ini tidak memakai unit test. |
+| `npm run verify:api` | Integrasi API (PRD §13, keamanan, race 2 proses, batas) pada server, SQLite dan port sementara |
 
-Variabel environment ada di `.env.example`: `HOST`, `PORT`, `WEB_PORT`, `NODE_ENV`,
-`DATABASE_PATH` (default `./data/sesi-play.sqlite`), `DEMO_TTL_MINUTES` (default 720),
-`TRUST_PROXY` (default `false`; isi jumlah hop/alamat hanya di belakang proxy HTTPS). Untuk uji, arahkan `DATABASE_PATH`
-ke file sementara agar database pengembangan tidak tersentuh.
+Variabel environment (`.env.example`):
+
+| Variabel | Default | Fungsi |
+| --- | --- | --- |
+| `HOST`, `PORT` | `127.0.0.1`, `3001` | Alamat Express (API + build) |
+| `WEB_PORT` | `5173` | Port Vite saat dev |
+| `DATABASE_PATH` | `./data/sesi-play.sqlite` | File SQLite (arahkan ke file sementara untuk uji) |
+| `DEMO_TTL_MINUTES` | `720` | Umur workspace/sesi demo |
+| `TRUST_PROXY` | `false` | Isi jumlah hop/alamat hanya di belakang proxy HTTPS; `true` ditolak |
+| `ALLOWED_ORIGINS` | kosong | Origin tambahan untuk mutasi (pisahkan koma) |
+| `DEMO_SESSION_LIMIT` | `30` | Pembuatan/ganti sesi per IP per 10 menit |
+| `API_RATE_LIMIT` | `300` | Request API per IP per menit |
+| `DEMO_MAX_WORKSPACES` | `200` | Workspace aktif maksimal (dari database; ganti peran tetap bisa) |
+
+## Keamanan demo
+
+- Cookie sesi HttpOnly, SameSite=Strict, Path=/api, Secure di HTTPS lewat proxy tepercaya;
+  token hanya disimpan sebagai hash. Workspace/peran/harga/status selalu dari server.
+- Origin mutasi harus origin aplikasi (atau `ALLOWED_ORIGINS`); browser lintas situs tanpa
+  Origin ditolak. Klien non-browser tanpa Origin/Fetch Metadata tetap bisa dipakai.
+  Body nonkosong wajib JSON ≤100 KB setelah dekompresi; tanpa CORS.
+- Header: CSP aset lokal (tanpa `unsafe-inline`), `frame-ancestors 'none'`/`X-Frame-Options: DENY`,
+  `nosniff`, `Referrer-Policy`, HSTS hanya pada HTTPS. Respons API `no-store`.
+- Error JSON tanpa stack trace; log error API hanya kode + requestId, tanpa isi request,
+  pesan database mentah, nama/nomor/token.
+- Ini simulasi peran untuk demo, **bukan login produksi**.
 
 ## Database
 
@@ -139,7 +164,8 @@ Migrasi yang sudah diterapkan tidak boleh diubah; tambahkan file baru.
 - `POST /api/demo/reset` body `{ "confirm": true }` (owner) → atomik mengembalikan data contoh,
   menghapus key idempotensi dan menaikkan `dataVersion`; sesi dan masa berlaku tetap.
 - Respons bersesi membawa header `X-Data-Version`; tab lain memuat ulang saat versi berubah.
-- Error JSON: `{ error: { code, message, fields?, requestId } }`; 503 `DATABASE_BUSY` + `Retry-After`.
+- Error JSON: `{ error: { code, message, fields?, requestId } }`; 503 `DATABASE_BUSY`/`DEMO_CAPACITY`
+  dan 429 `RATE_LIMITED` membawa `Retry-After`. Kontrak lengkap: [docs/API.md](docs/API.md).
 - Path `/api/*` lain → 404 JSON `{ "error": { "code": "NOT_FOUND", "message", "requestId" } }`,
   tidak pernah HTML SPA.
 
@@ -157,8 +183,9 @@ rental-ps/
                       session/, styles/ (base, controls, landing, app)
   server/             Express: app.js, index.js, config.js, routes/, middleware/, lib/,
                       database/ (koneksi, transaksi, migrasi, seed), repositories/
-  scripts/            migrate.js, seed.js
+  scripts/            migrate.js, seed.js, verify-api.js + verify/ (integrasi API)
   docs/design/        prototype visual statis (acuan, bukan aplikasi)
+  docs/               API.md, DATABASE.md, VERIFICATION.md, REVIEW-*.md
   docs/tickets/       backlog dan rincian RPS-001–RPS-013
 ```
 
@@ -167,8 +194,9 @@ Repo Git: `https://github.com/raihanirvana/rental-ps.git`. `.gitignore` mengecua
 
 Hasil review: [RPS-001–003](docs/REVIEW-RPS-001-003.md),
 [RPS-004–005](docs/REVIEW-RPS-004-005.md), [RPS-006–007](docs/REVIEW-RPS-006-007.md)
-[RPS-008–009](docs/REVIEW-RPS-008-009.md) dan [RPS-010–011](docs/REVIEW-RPS-010-011.md).
+[RPS-008–009](docs/REVIEW-RPS-008-009.md), [RPS-010–011](docs/REVIEW-RPS-010-011.md)
+dan [RPS-012](docs/REVIEW-RPS-012.md).
 
 ## Tahap berikutnya
 
-**RPS-012** (integrasi, keamanan dan kesiapan demo). Kerjakan satu tiket per tahap.
+**RPS-013** (deployment gratis dan panduan presentasi). Kerjakan satu tiket per tahap.

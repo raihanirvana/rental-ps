@@ -50,3 +50,9 @@ export function bumpDataVersion(database, workspaceId) {
     .run(workspaceId);
   return findWorkspace(database, workspaceId).data_version;
 }
+
+// Kapasitas dihitung dari database (bukan memori proses) agar konsisten antarproses.
+export function countActiveWorkspaces(database, nowIso) {
+  return database.prepare('SELECT count(*) AS n FROM workspaces WHERE expires_at > ?').get(nowIso)
+    .n;
+}

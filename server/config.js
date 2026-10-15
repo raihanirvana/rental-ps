@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { normalizeOrigin } from './lib/origin.js';
 
 const rootDirectory = fileURLToPath(new URL('../', import.meta.url));
 const envPath = resolve(rootDirectory, '.env');
@@ -45,6 +46,33 @@ function readTrustProxy(value) {
   return /^\d+$/.test(value) ? Number(value) : value;
 }
 
+function readLimit(value, fallback, name) {
+  const number = Number(value ?? fallback);
+  if (!Number.isInteger(number) || number < 1 || number > 1000000) {
+    throw new Error(`${name} harus berupa bilangan bulat antara 1 dan 1.000.000.`);
+  }
+  return number;
+}
+
+// Origin tambahan yang boleh melakukan mutasi (dipisah koma), mis. domain hosting publik.
+function readOrigins(value) {
+  const origins = (value ?? '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+  return [
+    ...new Set(
+      origins.map((origin) => {
+        const normalized = normalizeOrigin(origin);
+        if (!normalized) {
+          throw new Error('ALLOWED_ORIGINS harus berisi origin HTTP(S) tanpa path/kredensial.');
+        }
+        return normalized;
+      }),
+    ),
+  ];
+}
+
 export const config = {
   host: process.env.HOST ?? '127.0.0.1',
   port: readPort(process.env.PORT ?? '3001', 'PORT'),
@@ -53,6 +81,12 @@ export const config = {
   // Umur workspace demo; sesi mengikuti umur workspace dan tidak diperpanjang ganti peran.
   demoTtlMinutes: readDemoTtlMinutes(process.env.DEMO_TTL_MINUTES ?? '720'),
   trustProxy: readTrustProxy(process.env.TRUST_PROXY),
+  allowedOrigins: readOrigins(process.env.ALLOWED_ORIGINS),
+  // Batas demo publik: pembuatan/ganti sesi per IP per 10 menit, request API per IP per menit,
+  // dan jumlah workspace aktif di seluruh server.
+  demoSessionLimit: readLimit(process.env.DEMO_SESSION_LIMIT, 30, 'DEMO_SESSION_LIMIT'),
+  apiRateLimit: readLimit(process.env.API_RATE_LIMIT, 300, 'API_RATE_LIMIT'),
+  maxWorkspaces: readLimit(process.env.DEMO_MAX_WORKSPACES, 200, 'DEMO_MAX_WORKSPACES'),
   // Path relatif dihitung dari root proyek; ':memory:' untuk pemeriksaan sementara.
   databasePath: readDatabasePath(process.env.DATABASE_PATH ?? './data/sesi-play.sqlite'),
   webDirectory: resolve(rootDirectory, 'client/dist'),

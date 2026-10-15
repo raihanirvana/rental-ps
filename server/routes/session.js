@@ -18,6 +18,7 @@ function createDemoSessionHandler(database) {
       currentAuth: request.auth,
       sessionProblem: request.authProblem,
       ttlMinutes: config.demoTtlMinutes,
+      maxWorkspaces: config.maxWorkspaces,
     });
     setSessionCookie(request, response, result.token, result.auth.expiresAt);
     response.status(result.workspaceCreated ? 201 : 200).json({
