@@ -320,3 +320,24 @@ Label tarif unit dan ringkasan mengikuti hasil availability terbaru, bukan katal
 Respons sesi lama tidak menimpa sesi baru. Respons JSON booking rusak/body timeout menampilkan
 error yang dapat diulang dengan key sama; tidak berpindah ke konfirmasi kosong. Lihat
 [catatan review](docs/REVIEW-RPS-006-007.md) untuk verifikasi dan batasnya.
+
+### Implementasi RPS-008 (booking saya)
+
+- Daftar ringan per booking (nomor, status tertulis, unit snapshot, jadwal WIB, durasi,
+  nilai reservasi) dengan tab Mendatang/Riwayat/Dibatalkan dan paginasi 10 per halaman;
+  tab dan halaman disimpan di URL (`?tampil=&halaman=`). Ponsel: kartu berlabel.
+- Detail memakai **halaman** `/booking-saya/:id`, bukan dialog seperti tabel §8, agar refresh,
+  tab baru dan URL langsung (termasuk 404 untuk seed/workspace lain) bekerja tanpa state
+  tersembunyi. Pembatalan tetap memakai dialog konfirmasi dengan alasan opsional.
+
+### Implementasi RPS-009 (agenda pemilik)
+
+- Timeline penuh 10.00–23.00 (26 kolom 30 menit) dalam region ber-scroll berlabel; item
+  memakai nama yang dibacakan lengkap (unit, nama, jam, status, data contoh). Teks item
+  1 jam bisa terpotong secara visual; detail lengkap ada di dialog.
+- Warna: biru solid sedang main, biru muda reservasi, putih bergaris putus "Menunggu
+  selesai" (confirmed yang sudah lewat), hijau selesai, hatch blok. Booking dibatalkan
+  tidak digambar di timeline; tampil di daftar "Booking dibatalkan" di bawahnya.
+- Ponsel: daftar kronologis seluruh item. Filter tanggal (‹ › Hari ini), unit dan status
+  disimpan di URL. Ringkasan satu baris + catatan "Bukan pendapatan diterima".
+- Tombol "Tambah booking" pada prototype belum dibuat (bukan kriteria RPS-009).

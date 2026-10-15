@@ -22,9 +22,9 @@ export function withWorkspaceAccess(database, auth, roles, work) {
 
 // Ambil snapshot lebih dulu, lalu validasi sesi dan baca data dalam snapshot yang sama.
 // Logout/rotasi dari proses lain tidak boleh menyebabkan pembacaan workspace tanpa sesi.
-export function withWorkspaceReadAccess(database, auth, work) {
+export function withWorkspaceReadAccess(database, auth, work, roles = Object.keys(demoRoles)) {
   return withReadTransaction(database, () => {
-    const current = currentAuth(database, auth, Object.keys(demoRoles));
+    const current = currentAuth(database, auth, roles);
     return work(current);
   });
 }

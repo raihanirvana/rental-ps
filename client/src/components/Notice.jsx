@@ -26,3 +26,11 @@ export function ErrorNotice({ error, onRetry }) {
     </Notice>
   );
 }
+
+export function RefreshErrorNotice({ resource }) {
+  if (!resource.refreshError) {
+    return null;
+  }
+  const message = `Data belum berhasil diperbarui. ${resource.refreshError.message}`;
+  return <ErrorNotice error={{ message }} onRetry={resource.refresh} />;
+}

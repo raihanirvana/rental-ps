@@ -8,6 +8,7 @@ import { requestContext } from './middleware/request-context.js';
 import { createBookingRouter } from './routes/bookings.js';
 import { createCatalogRouter } from './routes/catalog.js';
 import { createHealthRouter } from './routes/health.js';
+import { createOwnerRouter } from './routes/owner.js';
 import { createSessionRouter } from './routes/session.js';
 
 // Respons API berisi data sesi/workspace, jadi tidak boleh disimpan cache.
@@ -24,6 +25,7 @@ function mountApi(app, database) {
   app.use('/api', createSessionRouter(database));
   app.use('/api', createCatalogRouter(database));
   app.use('/api', createBookingRouter(database));
+  app.use('/api', createOwnerRouter(database));
   app.use('/api', apiNotFound);
 }
 
@@ -35,7 +37,13 @@ function mountFrontend(app) {
     return;
   }
   app.use(express.static(config.webDirectory, { dotfiles: 'deny', index: false }));
-  app.get('/{*path}', (_request, response) => {
+  // Middleware tanpa parameter rute: path dengan encoding rusak (mis. %ZZ) tetap mendapat
+  // index.html dan halaman 404 React, bukan error decode 500.
+  app.use((request, response, next) => {
+    if (request.method !== 'GET' && request.method !== 'HEAD') {
+      next();
+      return;
+    }
     response.set('Cache-Control', 'no-cache');
     response.sendFile(indexFile);
   });

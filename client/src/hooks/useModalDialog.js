@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { openModal } from '../lib/dialog-focus.js';
 
 // Membuka <dialog> sebagai modal (fokus terkunci, latar inert) dan mengembalikan fokus
 // ke elemen pemicu saat ditutup.
@@ -9,18 +10,7 @@ export function useModalDialog(open) {
     if (!open || !dialog) {
       return undefined;
     }
-    const opener = document.activeElement;
-    if (!dialog.open) {
-      dialog.showModal();
-    }
-    return () => {
-      if (dialog.open) {
-        dialog.close();
-      }
-      if (opener?.isConnected) {
-        opener.focus();
-      }
-    };
+    return openModal(dialog);
   }, [open]);
   return dialogRef;
 }

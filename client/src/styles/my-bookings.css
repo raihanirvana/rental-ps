@@ -1,0 +1,201 @@
+/* Booking saya: daftar ringan, kartu berlabel di ponsel (DESIGN.md §8). */
+.booking-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  margin-top: 26px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+.booking-tabs a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.booking-tabs a:hover {
+  color: var(--blue);
+}
+.booking-tabs a[aria-current='page'] {
+  color: var(--blue);
+  font-weight: 700;
+  border-bottom-color: var(--blue);
+}
+.booking-list-section {
+  margin-top: 20px;
+}
+.list-count {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.list-state {
+  padding: 24px;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.list-state .button {
+  margin-top: 14px;
+}
+.booking-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+.booking-item {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px 24px;
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.booking-item-top {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 6px;
+}
+.booking-ref {
+  font-size: 15px;
+  letter-spacing: 0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.booking-facts {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  gap: 2px 20px;
+  margin: 0;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.booking-facts dt {
+  grid-row: 1;
+  color: var(--muted);
+  font-size: 11px;
+}
+.booking-facts dd {
+  grid-row: 2;
+  margin: 0;
+  font-weight: 600;
+}
+.booking-facts dd.price {
+  font-size: 13px;
+  letter-spacing: 0;
+}
+.booking-item-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--blue);
+  font-size: 12px;
+}
+.status-badge {
+  display: inline-flex;
+  padding: 3px 9px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--blue-wash);
+  color: #2e4998;
+}
+.status-badge--ongoing {
+  background: var(--blue);
+  color: white;
+}
+.status-badge--completed {
+  background: var(--success-wash);
+  color: var(--success);
+}
+.status-badge--ended,
+.status-badge--cancelled {
+  background: #edf1f6;
+  color: var(--muted);
+}
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.detail-intro {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+}
+.detail-intro .back-link {
+  flex-basis: 100%;
+  font-size: 12px;
+  color: var(--blue);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.detail-intro h1 {
+  font-variant-numeric: tabular-nums;
+}
+.page .notice {
+  margin-top: 18px;
+}
+.detail-panel {
+  max-width: 640px;
+}
+.detail-panel .detail-list {
+  margin-top: 16px;
+}
+.cancellation-facts {
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.detail-note {
+  margin: 18px 0 14px;
+  font-size: 12px;
+}
+.reason-field {
+  margin-top: 6px;
+}
+.reason-field textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+@media (max-width: 1000px) {
+  .booking-item {
+    grid-template-columns: 1fr auto;
+  }
+  .booking-facts {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  .booking-item-top {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
+}
+@media (max-width: 700px) {
+  .booking-facts {
+    grid-template-columns: auto 1fr;
+    gap: 6px 14px;
+  }
+  .booking-facts dt,
+  .booking-facts dd {
+    grid-row: auto;
+  }
+  .booking-facts dd {
+    text-align: right;
+  }
+  .booking-item {
+    padding: 14px 16px;
+  }
+}

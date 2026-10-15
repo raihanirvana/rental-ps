@@ -6,6 +6,8 @@ import './styles/controls.css';
 import './styles/landing.css';
 import './styles/app.css';
 import './styles/booking.css';
+import './styles/my-bookings.css';
+import './styles/agenda.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
