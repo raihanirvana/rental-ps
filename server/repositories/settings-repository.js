@@ -5,3 +5,12 @@ const insertSettingsSql = `
 export function insertSettings(database, settings) {
   database.prepare(insertSettingsSql).run(settings);
 }
+
+export function findSettings(database, workspaceId) {
+  return database
+    .prepare(
+      `SELECT business_name, address, contact_note FROM business_settings
+       WHERE workspace_id = ?`,
+    )
+    .get(workspaceId);
+}

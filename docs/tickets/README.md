@@ -1,7 +1,7 @@
 # Backlog Sesi Play
 
 13 tiket untuk demo booking rental PS **di tempat**, dikerjakan satu per satu.
-RPS-001–RPS-003 **Selesai**. Tiket lain masih **Belum dimulai**.
+RPS-001–RPS-005 **Selesai**. Tiket lain masih **Belum dimulai**.
 
 Baca [PRD](../../PRD.md) dan [AGENTS.md](../../AGENTS.md) sebelum mulai.
 Stack rencana: React + Vite, CSS, Express, SQLite, JavaScript ESM.
@@ -18,8 +18,8 @@ meski prioritas berbeda; jangan melewati pengujian integrasi sebelum deployment.
 | [RPS-001](RPS-001.md) | Fondasi aplikasi dan standar kode | P0 | — | Selesai |
 | [RPS-002](RPS-002.md) | Database, migrasi dan seed relatif WIB | P0 | RPS-001 | Selesai |
 | [RPS-003](RPS-003.md) | Sesi demo, peran dan isolasi workspace | P0 | RPS-002 | Selesai |
-| [RPS-004](RPS-004.md) | Katalog dan mesin ketersediaan slot | P0 | RPS-003 | Belum dimulai |
-| [RPS-005](RPS-005.md) | Booking atomik, detail dan pembatalan | P0 | RPS-004 | Belum dimulai |
+| [RPS-004](RPS-004.md) | Katalog dan mesin ketersediaan slot | P0 | RPS-003 | Selesai |
+| [RPS-005](RPS-005.md) | Booking atomik, detail dan pembatalan | P0 | RPS-004 | Selesai |
 | [RPS-006](RPS-006.md) | Landing, arah visual dan kerangka frontend | P0 | RPS-003, RPS-004 | Belum dimulai |
 | [RPS-007](RPS-007.md) | Alur memilih slot dan konfirmasi booking | P0 | RPS-005, RPS-006 | Belum dimulai |
 | [RPS-008](RPS-008.md) | Booking saya, detail dan batal | P0 | RPS-007 | Belum dimulai |

@@ -5,6 +5,8 @@ import { config } from './config.js';
 import { loadSession } from './middleware/auth.js';
 import { apiNotFound, errorHandler } from './middleware/errors.js';
 import { requestContext } from './middleware/request-context.js';
+import { createBookingRouter } from './routes/bookings.js';
+import { createCatalogRouter } from './routes/catalog.js';
 import { createHealthRouter } from './routes/health.js';
 import { createSessionRouter } from './routes/session.js';
 
@@ -20,6 +22,8 @@ function mountApi(app, database) {
   app.use('/api', createHealthRouter(database));
   app.use('/api', loadSession(database));
   app.use('/api', createSessionRouter(database));
+  app.use('/api', createCatalogRouter(database));
+  app.use('/api', createBookingRouter(database));
   app.use('/api', apiNotFound);
 }
 

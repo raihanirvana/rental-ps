@@ -1,6 +1,6 @@
-import { withTransaction } from '../database/transaction.js';
+import { withReadTransaction, withTransaction } from '../database/transaction.js';
 import { HttpError } from '../lib/http-error.js';
-import { resolveSessionById } from './session-resolver.js';
+import { demoRoles, resolveSessionById } from './session-resolver.js';
 
 function currentAuth(database, auth, roles) {
   const current = resolveSessionById(database, auth.sessionId, new Date());
@@ -18,4 +18,13 @@ function currentAuth(database, auth, roles) {
 // sebelum data diubah. `work` menerima auth terkini (workspaceId, role) dari tabel sessions.
 export function withWorkspaceAccess(database, auth, roles, work) {
   return withTransaction(database, () => work(currentAuth(database, auth, roles)));
+}
+
+// Ambil snapshot lebih dulu, lalu validasi sesi dan baca data dalam snapshot yang sama.
+// Logout/rotasi dari proses lain tidak boleh menyebabkan pembacaan workspace tanpa sesi.
+export function withWorkspaceReadAccess(database, auth, work) {
+  return withReadTransaction(database, () => {
+    const current = currentAuth(database, auth, Object.keys(demoRoles));
+    return work(current);
+  });
 }

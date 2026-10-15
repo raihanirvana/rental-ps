@@ -6,3 +6,12 @@ const insertBlockSql = `
 export function insertBlock(database, block) {
   database.prepare(insertBlockSql).run(block);
 }
+
+const blockIntervalsSql = `
+  SELECT starts_at, ends_at FROM unit_blocks
+  WHERE workspace_id = ? AND unit_id = ? AND starts_at < ? AND ends_at > ?
+  ORDER BY starts_at`;
+
+export function listBlockIntervals(database, { workspaceId, unitId, from, to }) {
+  return database.prepare(blockIntervalsSql).all(workspaceId, unitId, to, from);
+}

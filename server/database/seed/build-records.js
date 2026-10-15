@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { createBookingReference } from '../../lib/booking-reference.js';
+import { quoteTotal } from '../../lib/money.js';
 import { addMinutes, shiftDateKey, wibDateTime } from '../../lib/wib-time.js';
 
 const hourInMinutes = 60;
@@ -54,7 +55,7 @@ export function buildSeedBooking({ entry, unit, workspaceId, now, today }) {
     unitName: unit.name,
     unitKind: unit.kind,
     hourlyRate: unit.hourlyRate,
-    totalPrice: (unit.hourlyRate * entry.minutes) / hourInMinutes,
+    totalPrice: quoteTotal(unit.hourlyRate, entry.minutes),
     customerName: entry.customer,
     phone: null,
     createdAt,

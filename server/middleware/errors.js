@@ -15,6 +15,33 @@ const databaseBusy = {
   message: 'Jadwal sedang diperbarui. Coba lagi sebentar.',
 };
 
+// Pesan RAISE dari trigger database (pengaman terakhir) dipetakan ke konflik yang jelas.
+const triggerErrors = {
+  SCHEDULE_CONFLICT: {
+    status: 409,
+    code: 'SLOT_UNAVAILABLE',
+    message: 'Jadwal bentrok dengan booking atau blok lain.',
+  },
+  INVALID_STATUS_TRANSITION: {
+    status: 409,
+    code: 'INVALID_STATUS',
+    message: 'Status booking tidak bisa diubah.',
+  },
+  BOOKING_IMMUTABLE: {
+    status: 409,
+    code: 'BOOKING_IMMUTABLE',
+    message: 'Jadwal booking tidak bisa diubah. Batalkan lalu buat booking baru.',
+  },
+};
+
+function describeDatabaseError(error) {
+  if ([5, 6].includes(error.errcode & 255)) {
+    return databaseBusy;
+  }
+  const key = Object.keys(triggerErrors).find((name) => error.message?.includes(name));
+  return key ? triggerErrors[key] : null;
+}
+
 const internalError = {
   status: 500,
   code: 'INTERNAL_ERROR',
@@ -31,10 +58,8 @@ function describeError(error) {
     const { status, code, message, fields } = error;
     return { status, code, message, fields };
   }
-  if (error.code === 'ERR_SQLITE_ERROR' && [5, 6].includes(error.errcode & 255)) {
-    return databaseBusy;
-  }
-  return bodyErrors[error.type] ?? internalError;
+  const databaseError = error.code === 'ERR_SQLITE_ERROR' ? describeDatabaseError(error) : null;
+  return databaseError ?? bodyErrors[error.type] ?? internalError;
 }
 
 export function errorHandler(error, request, response, _next) {

@@ -1,7 +1,7 @@
 # Sesi Play — demo booking rental PlayStation
 
 Proyek portfolio dan contoh jasa pembuatan website untuk bisnis rental PS.
-Tahap saat ini: **RPS-003 selesai** (sesi demo dan peran). Katalog/booking belum ada.
+Tahap saat ini: **RPS-005 selesai** (API booking, detail dan pembatalan). UI belum ada.
 
 Model yang sudah dipilih pemilik: pelanggan **main di tempat**, booking unit PS/bilik
 per jam. Model dibawa pulang/sewa harian berada di luar cakupan MVP.
@@ -105,6 +105,22 @@ Migrasi yang sudah diterapkan tidak boleh diubah; tambahkan file baru.
 - Cookie `sesi_play_session`: HttpOnly, SameSite=Strict, Path=/api, Secure di HTTPS.
   Workspace dan peran hanya dari sesi server. Seluruh `/api` memakai `Cache-Control: no-store`.
 - Database sibuk/terkunci → 503 `DATABASE_BUSY` dengan `Retry-After: 1`, bukan 500.
+- `GET /api/catalog` → tanpa sesi: contoh publik statis (`source: "sample"`, `id: null`,
+  tanpa cookie/workspace); dengan sesi: unit dan identitas workspace sendiri. Memuat `rules`.
+- `GET /api/availability?unitId=&date=YYYY-MM-DD&durationMinutes=60|120|180` (perlu sesi)
+  → slot 30 menit WIB dengan `available`/`reason` (`past`, `lead_time`, `blocked`, `booked`,
+  `unit_inactive`), `quote`, `serverTime`, `bookableDates` (D…D+14). Slot tidak ditahan.
+- `POST /api/bookings` body `{ unitId, date, startTime, durationMinutes, customerName,
+  phone?, idempotencyKey }` → 201 baru / 200 replay; harga, status dan workspace dari server.
+  409 `SLOT_UNAVAILABLE`, `IDEMPOTENCY_CONFLICT`, `UNIT_INACTIVE`; 400 dengan `fields`.
+- `GET /api/bookings/mine?view=upcoming|finished|cancelled&limit=&offset=` → booking
+  pengunjung workspace sendiri (seed tidak termasuk).
+- `GET /api/bookings/:id` → detail sesuai hak akses (customer: booking pengunjung; owner: semua).
+- `POST /api/bookings/:id/cancel` body `{ reason? }` → customer sebelum mulai, owner confirmed.
+  Boleh tanpa body; jika mengirim body wajib JSON. Non-JSON/karakter kontrol ditolak 400.
+- Katalog workspace, availability, mine dan detail mengecek ulang sesi dalam snapshot baca;
+  auth yang dicabut/logout tidak dipakai untuk membaca data workspace.
+- Error JSON: `{ error: { code, message, fields?, requestId } }`; 503 `DATABASE_BUSY` + `Retry-After`.
 - Path `/api/*` lain → 404 JSON `{ "error": { "code": "NOT_FOUND", "message", "requestId" } }`,
   tidak pernah HTML SPA.
 
@@ -127,8 +143,9 @@ rental-ps/
 Repo Git: `https://github.com/raihanirvana/rental-ps.git`. `.gitignore` mengecualikan `.env`,
 `node_modules/`, `client/dist/`, `data/` dan file SQLite.
 
-Hasil review RPS-001–003 ada di [catatan review](docs/REVIEW-RPS-001-003.md).
+Hasil review: [RPS-001–003](docs/REVIEW-RPS-001-003.md) dan
+[RPS-004–005](docs/REVIEW-RPS-004-005.md).
 
 ## Tahap berikutnya
 
-**RPS-004** (katalog dan mesin ketersediaan slot). Kerjakan satu tiket per tahap.
+**RPS-006** (landing, arah visual dan kerangka frontend). Kerjakan satu tiket per tahap.
