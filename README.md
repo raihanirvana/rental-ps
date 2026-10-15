@@ -2,7 +2,7 @@
 
 Proyek portfolio dan contoh jasa pembuatan website untuk bisnis rental PS.
 Tahap saat ini: **RPS-012 selesai** (fitur lengkap, keamanan dan verifikasi integrasi).
-Berikutnya deployment demo gratis (RPS-013); belum ada URL publik.
+RPS-013 sedang diverifikasi: deployment Render Free dan panduan presentasi.
 
 Model yang sudah dipilih pemilik: pelanggan **main di tempat**, booking unit PS/bilik
 per jam. Model dibawa pulang/sewa harian berada di luar cakupan MVP.
@@ -15,6 +15,8 @@ per jam. Model dibawa pulang/sewa harian berada di luar cakupan MVP.
 - [Aturan proyek](AGENTS.md): satu tiket per tahap, fungsi maksimal 25 baris, tanpa unit test.
 - [Kontrak API](docs/API.md), [Database](docs/DATABASE.md) dan
   [Verifikasi & hasil nyata](docs/VERIFICATION.md).
+- [Deployment dan panduan presentasi](docs/DEPLOYMENT.md): konfigurasi Render Free,
+  script deploy, batas kuota dan cara memulai ulang demo setelah data hilang.
 
 ## Arah demo
 
@@ -169,9 +171,10 @@ Migrasi yang sudah diterapkan tidak boleh diubah; tambahkan file baru.
 - Path `/api/*` lain → 404 JSON `{ "error": { "code": "NOT_FOUND", "message", "requestId" } }`,
   tidak pernah HTML SPA.
 
-Target demo awal: Render Free dengan SQLite sementara, tunduk pada kuota akun.
-Data bisa hilang saat sleep/restart/redeploy. Belum membuat service hosting atau
-mempublikasikan aplikasi. Detail keputusan hosting dikerjakan di RPS-013.
+Target demo: Render Free dengan SQLite sementara, tunduk pada kuota akun.
+Data bisa hilang saat sleep/restart/redeploy. `render.yaml` dan
+`bash scripts/deploy-render.sh --create` menyiapkan satu Node Web Service Free;
+redeploy dengan `bash scripts/deploy-render.sh`. Detail: [deployment](docs/DEPLOYMENT.md).
 
 ## Struktur
 

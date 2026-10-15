@@ -5,7 +5,7 @@
   "description": "Demo booking rental PlayStation di tempat (per jam).",
   "type": "module",
   "engines": {
-    "node": ">=22.13.0"
+    "node": ">=22.13.0 <23"
   },
   "scripts": {
     "dev": "concurrently --kill-others --names web,api \"npm:dev:web\" \"npm:dev:api\"",

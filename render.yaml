@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: sesi-play
+    runtime: node
+    repo: https://github.com/raihanirvana/rental-ps
+    branch: master
+    plan: free
+    region: singapore
+    numInstances: 1
+    buildCommand: npm ci --include=dev && npm run check
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeployTrigger: off
+    envVars:
+      - key: NODE_VERSION
+        value: '22.20.0'
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: TRUST_PROXY
+        value: '1'
+      - key: DATABASE_PATH
+        value: ./data/sesi-play.sqlite
