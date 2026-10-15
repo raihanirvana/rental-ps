@@ -1,8 +1,9 @@
 # Sesi Play — demo booking rental PlayStation
 
 Proyek portfolio dan contoh jasa pembuatan website untuk bisnis rental PS.
-Tahap saat ini: **RPS-012 selesai** (fitur lengkap, keamanan dan verifikasi integrasi).
-RPS-013 sedang diverifikasi: deployment Render Free dan panduan presentasi.
+**RPS-001–RPS-013 selesai.** Demo publik: **https://sesi-play.onrender.com**.
+Frontend dan API sudah diverifikasi pada satu service Render Free.
+Pembukaan pertama setelah idle bisa memerlukan sekitar satu menit; data demo sementara.
 
 Model yang sudah dipilih pemilik: pelanggan **main di tempat**, booking unit PS/bilik
 per jam. Model dibawa pulang/sewa harian berada di luar cakupan MVP.
@@ -46,7 +47,7 @@ itu wajar. `.npmrc` memakai `engine-strict=true` sehingga install di Node lebih 
 ## Menjalankan lokal
 
 ```bash
-nvm use                 # atau pastikan `node -v` >= 22.13.0
+nvm use                 # Node 22.20.0; didukung 22.13.0 sampai sebelum 23
 cp .env.example .env    # opsional; nilai default sama
 npm ci                  # instalasi bersih sesuai package-lock.json
 npm run dev             # Vite http://127.0.0.1:5173 + API http://127.0.0.1:3001
@@ -200,6 +201,18 @@ Hasil review: [RPS-001–003](docs/REVIEW-RPS-001-003.md),
 [RPS-008–009](docs/REVIEW-RPS-008-009.md), [RPS-010–011](docs/REVIEW-RPS-010-011.md)
 dan [RPS-012](docs/REVIEW-RPS-012.md).
 
-## Tahap berikutnya
+## Mencoba demo publik
 
-**RPS-013** (deployment gratis dan panduan presentasi). Kerjakan satu tiket per tahap.
+Buka **https://sesi-play.onrender.com** → **Coba booking**, pilih unit dan tanggal besok,
+lalu konfirmasi memakai data contoh. **Coba sebagai pemilik** membuka agenda dengan data
+yang sama. Mode incognito mendapat ruang terpisah. Tidak ada pembayaran sungguhan.
+
+Service Free tidur setelah 15 menit tanpa traffic. SQLite dapat hilang saat sleep, restart
+atau redeploy; mulai demo lagi jika sesi sudah tidak berlaku. Kuota 750 jam instance/bulan
+dibagi seluruh Free Web Service di workspace, termasuk POS. Bandwidth/build juga berkuota;
+akun dengan metode pembayaran bisa dikenai biaya kelebihan pemakaian. Detail dan sumber:
+[panduan deployment](docs/DEPLOYMENT.md).
+
+Redeploy setelah push: `bash scripts/deploy-render.sh`. Auto-deploy sengaja off.
+Panduan presentasi dan pemulihan tersedia di dokumen yang sama; bukti pengujian nyata ada
+di [RPS-013](docs/tickets/RPS-013.md). Semua tiket MVP sudah selesai.

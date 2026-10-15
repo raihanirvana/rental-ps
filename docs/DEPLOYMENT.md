@@ -4,6 +4,10 @@ Target: satu **Render Free Web Service**, region Singapore, repo
 `raihanirvana/rental-ps`, branch `master`. React dan API memakai origin yang sama;
 tidak perlu Vercel, database terpisah, CORS atau domain berbayar.
 
+Demo live: **https://sesi-play.onrender.com**. Dashboard service:
+https://dashboard.render.com/web/srv-db8g31rncjis73auevmg.
+Service ID bukan secret; token otorisasi tidak dicantumkan.
+
 ## Konfigurasi
 
 `render.yaml` adalah acuan konfigurasi. Script CLI membuat service dengan nilai yang sama.
@@ -72,6 +76,10 @@ Berdasarkan [dokumentasi Render Free](https://render.com/docs/free), diperiksa 1
   untuk demo ini. Script hanya membuat compute Free, bukan mengubah pengaturan billing akun.
 
 CLI menampilkan paket service tetapi tidak menampilkan sisa kuota bulanan/billing workspace.
+Saat deploy, workspace memuat tiga Free Web Service: be-report-keuangan, seduh-pos dan
+sesi-play. Render menerima service serta build baru tanpa upgrade/disk tambahan. Angka sisa
+jam, bandwidth, build dan metode pembayaran tidak tersedia lewat CLI; nilainya tidak diklaim
+sudah diketahui. Dua service sebelumnya tidak diubah atau di-restart.
 Jangan menganggap service Free berarti kuota tak terbatas. Buka demo sesaat sebelum
 presentasi; hindari bot keep-alive yang menghabiskan jatah bersama.
 
@@ -98,4 +106,5 @@ Jika server sedang bangun, tunggu halaman Render selesai lalu muat ulang sekali;
 6. Di ruang pertama, sebagai pemilik buka **Pengaturan** → **Reset data demo** → konfirmasi.
    Data kembali ke contoh awal; ruang incognito tetap utuh. Reset juga bisa dibatalkan.
 
-URL publik dan bukti hasil deployment dicatat setelah verifikasi di tiket RPS-013.
+Hasil curl, Chrome, isolasi dua pengunjung dan restart nyata:
+[bukti RPS-013](tickets/RPS-013.md). Pengujian dilakukan 15 Oktober 2026 (WIB).

@@ -335,9 +335,11 @@ menjadi skenario kedaluwarsa. Uji dengan database dan port sementara.
 
 ## 14. Hosting dan keterbatasan
 
-Rencana pertama adalah satu Node Web Service gratis di Render, mengikuti pendekatan
-POS, dengan SQLite sementara. Jam, kuota, lokasi, runtime dan kebutuhan akun diverifikasi
-saat RPS-013; tidak menjanjikan hosting gratis tanpa batas atau uptime produksi.
+Demo publik: **https://sesi-play.onrender.com**, satu Node Web Service Render Free di
+Singapore, Node 22.20.0 dengan SQLite sementara. RPS-013 memverifikasi HTTPS, cookie Secure,
+booking, dua pengunjung dan restart nyata. Kuota 750 jam instance/bulan dibagi seluruh
+Free Web Service dalam workspace; bandwidth/build juga berkuota. Tidak menjanjikan
+hosting gratis tanpa batas atau uptime produksi. [Deployment](docs/DEPLOYMENT.md).
 
 Sleep, restart atau redeploy dapat menghapus seluruh sesi dan booking demo lebih cepat
 dari TTL. Setelah itu pengunjung membuat workspace baru. Batas ini dijelaskan di landing

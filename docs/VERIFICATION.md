@@ -90,6 +90,23 @@ cek sesi anonim. Form dari origin loopback lain benar-benar mendapat 403 tanpa m
 workspace; probe script inline diblokir CSP (pelanggaran yang sengaja dipicu, terpisah dari
 jalur normal). Rincian di [catatan review](REVIEW-RPS-012.md).
 
+## RPS-013 — deployment publik
+
+15 Oktober 2026: **https://sesi-play.onrender.com** di Render Free Singapore, Node22.20.0,
+Express production bind 0.0.0.0:10000, SQLite sementara. Build hosting dan check lokal lulus.
+Integrasi API lokal ulang: **71/71 lulus**; lead time hari ini tidak dijalankan karena
+di luar jam buka. `render blueprints validate`: valid; bash syntax: lulus.
+
+Curl/klien HTTP publik memeriksa health, HTTPS redirect, Secure cookie, HSTS/CSP,
+origin asing/proxy spoof, booking D+1, replay, konflik, role switch, isolasi dua workspace
+dan reset. Chrome headless memeriksa alur pelanggan → history/refresh → owner agenda →
+pengaturan/refresh → reset, tanpa page exception/CSP violation. Restart service rental-ps
+nyata menghapus database: cookie lama 401 dan tombol mulai demo berhasil membuat ruang
+baru yang tetap bekerja setelah refresh. Service POS tidak disentuh.
+
+Bukti rinci dan batas kuota: [RPS-013](tickets/RPS-013.md),
+[panduan deploy/presentasi](DEPLOYMENT.md). Tidak menunggu sleep 15 menit secara terpisah.
+
 ## Console yang dijelaskan
 
 - `401 Unauthorized` pada `GET /api/session` di halaman tanpa sesi: cara client mengetahui belum
@@ -99,7 +116,6 @@ jalur normal). Rincian di [catatan review](REVIEW-RPS-012.md).
 ## Belum diuji / batas yang diketahui
 
 - Browser selain Chromium, perangkat fisik, pembaca layar sungguhan.
-- HTTPS publik dan deployment (RPS-013); HTTPS hanya disimulasikan dengan header proxy dari loopback.
 - Lebih dari satu instance di belakang load balancer: rate limit per proses, SQLite satu file.
 - Dua proses yang dinyalakan bersamaan pada database baru bisa gagal mengaktifkan WAL; desainnya
   satu instance penulis.

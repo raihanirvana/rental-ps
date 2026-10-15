@@ -1,7 +1,7 @@
 # Backlog Sesi Play
 
 13 tiket untuk demo booking rental PS **di tempat**, dikerjakan satu per satu.
-RPS-001–RPS-012 **Selesai**. RPS-013 **Dikerjakan**.
+RPS-001–RPS-013 **Selesai**. Demo: https://sesi-play.onrender.com.
 
 Baca [PRD](../../PRD.md) dan [AGENTS.md](../../AGENTS.md) sebelum mulai.
 Stack rencana: React + Vite, CSS, Express, SQLite, JavaScript ESM.
@@ -27,7 +27,7 @@ meski prioritas berbeda; jangan melewati pengujian integrasi sebelum deployment.
 | [RPS-010](RPS-010.md) | Pengelolaan unit dan blok jadwal | P0 | RPS-004, RPS-009 | Selesai |
 | [RPS-011](RPS-011.md) | Pengaturan usaha dan reset demo | P1 | RPS-008, RPS-010 | Selesai |
 | [RPS-012](RPS-012.md) | Integrasi, keamanan dan kesiapan demo | P0 | RPS-007, RPS-008, RPS-009, RPS-010, RPS-011 | Selesai |
-| [RPS-013](RPS-013.md) | Deployment gratis dan panduan presentasi | P1 | RPS-012 | Dikerjakan |
+| [RPS-013](RPS-013.md) | Deployment gratis dan panduan presentasi | P1 | RPS-012 | Selesai |
 
 ## Pembagian tahap
 
@@ -38,7 +38,7 @@ meski prioritas berbeda; jangan melewati pengujian integrasi sebelum deployment.
 
 ## Cara mengerjakan
 
-- Tahap terakhir **RPS-013**; fitur tambahan berada di luar backlog ini.
+- Semua tiket MVP selesai; fitur tambahan berada di luar backlog ini.
 - Model sudah dikonfirmasi pemilik: main di tempat, booking PS/bilik per jam.
 - Baca acceptance criteria, implementasikan, lalu jalankan check dan smoke check relevan.
 - Isi bukti pada tiket: perubahan, perintah/skenario, hasil dan batasan. Lulus lint/build
