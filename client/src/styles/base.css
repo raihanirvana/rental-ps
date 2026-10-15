@@ -1,0 +1,161 @@
+/* Token dan dasar tipografi mengikuti DESIGN.md §2–4. Font lokal, tanpa CDN runtime. */
+@font-face {
+  font-family: Manrope;
+  src: url('/fonts/Manrope-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: Manrope;
+  src: url('/fonts/Manrope-Semibold.ttf') format('truetype');
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: Manrope;
+  src: url('/fonts/Manrope-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Barlow Semi Condensed';
+  src: url('/fonts/BarlowSemiCondensed-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-display: swap;
+}
+:root {
+  color-scheme: light;
+  --paper: #f3f6fa;
+  --surface: #fff;
+  --ink: #243247;
+  --muted: #55657a;
+  --blue: #3456be;
+  --blue-wash: #e7edfc;
+  --line: #d9e1ec;
+  --success: #246349;
+  --success-wash: #e8f2ec;
+  --danger: #a72c40;
+  --danger-wash: #fceff1;
+  --blocked: #edf0f4;
+  --focus: #2448b4;
+  font:
+    400 14px/1.65 Manrope,
+    sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-synthesis: none;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  overflow-x: hidden;
+}
+button,
+input,
+select {
+  font: inherit;
+}
+button,
+a {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+button {
+  cursor: pointer;
+  color: inherit;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+}
+[hidden] {
+  display: none !important;
+}
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+h1,
+h2,
+.display-type {
+  font-family: 'Barlow Semi Condensed', sans-serif;
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+}
+h1 {
+  font-size: clamp(48px, 5.5vw, 78px);
+}
+h2 {
+  font-size: 44px;
+}
+h3 {
+  font-size: 17px;
+  letter-spacing: -0.025em;
+  line-height: 1.3;
+}
+small {
+  font-size: 12px;
+}
+strong {
+  font-weight: 700;
+}
+/* Target fokus programatik (main/heading tabIndex=-1) bukan kontrol interaktif. */
+main:focus,
+h1[tabindex='-1']:focus,
+h2[tabindex='-1']:focus {
+  outline: none;
+}
+.wrap {
+  max-width: 1216px;
+  padding: 0 40px;
+  margin: 0 auto;
+}
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 12px;
+  z-index: 20;
+  padding: 12px;
+  background: var(--surface);
+  font-weight: 700;
+}
+.skip-link:focus {
+  top: 12px;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.price,
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 1000px) {
+  .wrap {
+    padding: 0 28px;
+  }
+}
+@media (max-width: 700px) {
+  .wrap {
+    padding: 0 20px;
+  }
+  h2 {
+    font-size: 38px;
+  }
+}

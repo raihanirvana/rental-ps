@@ -258,7 +258,11 @@ membuat workspace. Endpoint availability dan data personal memerlukan sesi.
 | POST /api/demo/reset | Owner; reset data workspace secara atomik |
 
 POST booking menerima `unitId`, `date` (YYYY-MM-DD), `startTime` (HH:mm),
-`durationMinutes`, `customerName`, `phone` opsional, dan `idempotencyKey`.
+`durationMinutes`, `customerName`, `phone` opsional, `idempotencyKey`, dan `quoteId` opsional.
+Frontend mengirim `quoteId` dari availability untuk memastikan snapshot tarif/unit belum
+berubah; mismatch menghasilkan 409 `QUOTE_CHANGED` tanpa membuat booking. Pengunjung
+meninjau harga terbaru lalu mengonfirmasi ulang. Field ini bukan harga dari client atau
+hold slot. API lama tanpa quoteId tetap didukung; frontend baru selalu mengirimkannya.
 Field `workspaceId`, harga/total, role dan status dari client ditolak, bukan dipercaya.
 Owner membuat booking manual dengan kontrak sama; untuk demo ini booking manual itu
 terlihat di booking saya ketika peran diganti. Seed dibedakan dari booking pengunjung.
@@ -274,7 +278,7 @@ fields opsional. 400 invalid, 401 sesi, 403 role/origin, 404 data tak ditemukan/
 
 Satu transaksi `BEGIN IMMEDIATE` mencakup pemeriksaan ulang sesi setelah kunci tulis,
 idempotency key, unit aktif, batas waktu, konflik booking/blok, perhitungan harga,
-INSERT booking serta penyimpanan hasil idempotency. Validasi bentuk input boleh di luar
+pembandingan quoteId bila disertakan, INSERT booking serta penyimpanan hasil idempotency. Validasi bentuk input boleh di luar
 transaksi; validasi keadaan/waktu harus memakai keadaan terbaru di dalamnya.
 
 Key sama + payload sama → booking yang sama (200 replay, 201 saat pertama). Key sama +
@@ -320,6 +324,7 @@ menjadi skenario kedaluwarsa. Uji dengan database dan port sementara.
 | Key sama dengan jam berbeda | 409, tidak membuat booking kedua |
 | Customer membatalkan sebelum mulai | Cancelled, jadwal bebas kembali jika masih bisa dipesan |
 | Customer membatalkan setelah mulai | Ditolak; tidak mengubah status |
+| Unit/tarif berubah sesudah quote dimuat, sebelum booking dengan quoteId | 409 QUOTE_CHANGED; belum ada booking; tinjau harga baru dan konfirmasi ulang |
 | Unit/tarif berubah setelah booking | Detail lama tetap memakai snapshot asli |
 | Unit dinonaktifkan saat masih ada booking mendatang | 409; unit tetap aktif |
 | Dua pengunjung demo | Jadwal, booking dan reset satu pengunjung tidak memengaruhi yang lain |

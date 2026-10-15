@@ -11,6 +11,7 @@ const bookingKeys = [
   'customerName',
   'phone',
   'idempotencyKey',
+  'quoteId',
 ];
 const unitIdPattern = /^[A-Za-z0-9-]{8,64}$/;
 const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -80,6 +81,16 @@ function scheduleFieldErrors(body) {
   return fields;
 }
 
+function quoteFieldErrors(body) {
+  if (
+    body.quoteId !== undefined &&
+    (typeof body.quoteId !== 'string' || !/^[a-f0-9]{64}$/.test(body.quoteId))
+  ) {
+    return { quoteId: 'Quote tidak valid. Muat ulang jadwal.' };
+  }
+  return {};
+}
+
 function contactFieldErrors(body) {
   const fields = {};
   const nameError = validateName(body.customerName);
@@ -105,6 +116,7 @@ export function parseCreateBooking(body) {
     ...unknownFieldErrors(body, bookingKeys),
     ...scheduleFieldErrors(body),
     ...contactFieldErrors(body),
+    ...quoteFieldErrors(body),
   };
   if (Object.keys(fields).length > 0) {
     throw invalidInput('Periksa kembali data booking.', fields);
@@ -117,5 +129,6 @@ export function parseCreateBooking(body) {
     customerName: body.customerName.trim(),
     phone: normalizePhone(body.phone),
     idempotencyKey: body.idempotencyKey,
+    ...(body.quoteId === undefined ? {} : { quoteId: body.quoteId }),
   };
 }

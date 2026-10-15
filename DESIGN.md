@@ -8,7 +8,8 @@ implementasi RPS-006. Disusun memakai skill frontend-design untuk model yang sud
 
 Lihat prototype sebelum mengimplementasikan UI. Tiga layar memakai HTML/CSS/JS biasa,
 font lokal dan data ilustrasi. Tidak ada panggilan API, cookie, localStorage atau transaksi.
-Halaman React di `client/src/App.jsx` tetap fondasi aplikasi yang ada.
+Prototype terpisah dari aplikasi React. Implementasi landing/booking ada di `client/src/`;
+lihat catatan implementasi pada bagian 13.
 
 ```bash
 cd /Users/23061535/rental-ps
@@ -277,3 +278,45 @@ menambah Tailwind, UI kit atau library animasi untuk menyalin acuan ini.
 
 Mulai implementasi UI ketika dependensi tiketnya siap. Desain ini tidak mengubah status
 RPS-004/005/006 dan tidak mengotorisasi implementasi seluruh backlog sekaligus.
+
+## 13. Catatan implementasi RPS-006
+
+Token, tipografi (Barlow Semi Condensed 600 + Manrope, font lokal di `client/public/fonts/`
+beserta lisensi OFL), proporsi dan copy landing mengikuti bagian 2–5. CSS dibagi menjadi
+`client/src/styles/{base,controls,landing,app}.css`; komponen landing ada di
+`client/src/components/landing/`.
+
+Perbedaan karena data nyata dan kebutuhan demo:
+
+- Unit dan tarif landing berasal dari `GET /api/catalog` (contoh publik tanpa sesi,
+  katalog workspace dengan sesi), dikelompokkan per jenis. Jam buka dari `rules` server.
+- Papan jadwal hero tetap ilustrasi statis dengan label "Ilustrasi, bukan slot tersedia".
+- Penjelasan demo (tanpa akun, data sementara 12 jam, bayar di tempat) tampil sebagai daftar
+  pendek di bawah CTA sebelum pengunjung menekan tombol apa pun.
+- Header aplikasi: nav per peran, label peran, "Coba sebagai pemilik/pelanggan" dan
+  "Keluar demo" (dialog konfirmasi), ditambah bar demo berisi masa berlaku ruang demo WIB.
+- Layar status (memuat, gagal cek sesi, belum masuk, sesi berakhir, peran tidak sesuai,
+  404) memakai judul Barlow dan satu tindakan utama, tanpa redirect berulang.
+
+### Implementasi RPS-007 (booking pelanggan)
+
+- Struktur §6 diikuti: panel jadwal (unit radio, tanggal, durasi, grid slot 6/4 kolom) dan
+  ringkasan sticky 312px; ponsel satu kolom dengan ringkasan di bawah.
+- Grid hanya memuat jam yang server tawarkan (mulai 10.00, selesai ≤ 23.00), sehingga
+  sel "Tutup" pada prototype tidak ada. Alasan lain tertulis: Terisi, Diblokir, Lewat,
+  Terlalu dekat, Nonaktif.
+- Form data diri muncul di bawah slot setelah **Lanjut isi data**; fokus ke heading form.
+  Tombol akhir **Konfirmasi booking**; konfirmasi tampil di halaman (bukan dialog) dengan
+  snapshot server, "Bayar di tempat", tautan Booking saya dan Buat booking lain.
+
+### Perbaikan hasil review RPS-006–007
+
+Harga berubah kini ditangani sebelum reservasi tersimpan: availability memberikan quote ID,
+frontend menyertakannya saat konfirmasi, dan server membandingkannya di dalam transaksi.
+Jika berbeda, tampilkan pesan QUOTE_CHANGED dekat jadwal, refresh harga/slot, lepas pilihan
+jam dan pertahankan isian pelanggan. Pengguna memilih jam serta mengonfirmasi lagi.
+Label tarif unit dan ringkasan mengikuti hasil availability terbaru, bukan katalog lama.
+
+Respons sesi lama tidak menimpa sesi baru. Respons JSON booking rusak/body timeout menampilkan
+error yang dapat diulang dengan key sama; tidak berpindah ke konfirmasi kosong. Lihat
+[catatan review](docs/REVIEW-RPS-006-007.md) untuk verifikasi dan batasnya.

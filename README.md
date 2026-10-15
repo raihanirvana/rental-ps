@@ -1,7 +1,8 @@
 # Sesi Play — demo booking rental PlayStation
 
 Proyek portfolio dan contoh jasa pembuatan website untuk bisnis rental PS.
-Tahap saat ini: **RPS-005 selesai** (API booking, detail dan pembatalan). UI belum ada.
+Tahap saat ini: **RPS-007 selesai** (pelanggan bisa memilih slot dan membuat booking di UI).
+Booking saya, agenda pemilik dan pengelolaan unit belum dibangun di UI.
 
 Model yang sudah dipilih pemilik: pelanggan **main di tempat**, booking unit PS/bilik
 per jam. Model dibawa pulang/sewa harian berada di luar cakupan MVP.
@@ -106,12 +107,15 @@ Migrasi yang sudah diterapkan tidak boleh diubah; tambahkan file baru.
   Workspace dan peran hanya dari sesi server. Seluruh `/api` memakai `Cache-Control: no-store`.
 - Database sibuk/terkunci → 503 `DATABASE_BUSY` dengan `Retry-After: 1`, bukan 500.
 - `GET /api/catalog` → tanpa sesi: contoh publik statis (`source: "sample"`, `id: null`,
-  tanpa cookie/workspace); dengan sesi: unit dan identitas workspace sendiri. Memuat `rules`.
+  tanpa cookie/workspace); dengan sesi: unit dan identitas workspace sendiri. Memuat `rules`,
+  `serverDate` dan `bookableDates` (D…D+14 WIB dari server).
 - `GET /api/availability?unitId=&date=YYYY-MM-DD&durationMinutes=60|120|180` (perlu sesi)
   → slot 30 menit WIB dengan `available`/`reason` (`past`, `lead_time`, `blocked`, `booked`,
-  `unit_inactive`), `quote`, `serverTime`, `bookableDates` (D…D+14). Slot tidak ditahan.
+  `unit_inactive`), `quote` (termasuk `id` snapshot tarif/unit), `serverTime`, `bookableDates` (D…D+14). Slot tidak ditahan.
 - `POST /api/bookings` body `{ unitId, date, startTime, durationMinutes, customerName,
-  phone?, idempotencyKey }` → 201 baru / 200 replay; harga, status dan workspace dari server.
+  phone?, idempotencyKey, quoteId? }` → 201 baru / 200 replay; harga, status dan workspace dari server.
+  Frontend selalu menyertakan quoteId dari availability; mismatch → 409 `QUOTE_CHANGED`
+  tanpa booking, lalu pengguna meninjau harga terbaru. API lama tanpa quoteId tetap didukung.
   409 `SLOT_UNAVAILABLE`, `IDEMPOTENCY_CONFLICT`, `UNIT_INACTIVE`; 400 dengan `fields`.
 - `GET /api/bookings/mine?view=upcoming|finished|cancelled&limit=&offset=` → booking
   pengunjung workspace sendiri (seed tidak termasuk).
@@ -132,11 +136,14 @@ mempublikasikan aplikasi. Detail keputusan hosting dikerjakan di RPS-013.
 
 ```text
 rental-ps/
-  PRD.md, AGENTS.md, README.md
-  client/             Vite root: index.html, vite.config.js, src/
+  PRD.md, AGENTS.md, DESIGN.md, README.md
+  client/             Vite root: index.html, vite.config.js, public/fonts (lokal, OFL), src/
+                      src: pages/, components/ (landing/), hooks/, lib/ (api, router),
+                      session/, styles/ (base, controls, landing, app)
   server/             Express: app.js, index.js, config.js, routes/, middleware/, lib/,
                       database/ (koneksi, transaksi, migrasi, seed), repositories/
   scripts/            migrate.js, seed.js
+  docs/design/        prototype visual statis (acuan, bukan aplikasi)
   docs/tickets/       backlog dan rincian RPS-001–RPS-013
 ```
 
@@ -144,8 +151,8 @@ Repo Git: `https://github.com/raihanirvana/rental-ps.git`. `.gitignore` mengecua
 `node_modules/`, `client/dist/`, `data/` dan file SQLite.
 
 Hasil review: [RPS-001–003](docs/REVIEW-RPS-001-003.md) dan
-[RPS-004–005](docs/REVIEW-RPS-004-005.md).
+[RPS-004–005](docs/REVIEW-RPS-004-005.md), serta [RPS-006–007](docs/REVIEW-RPS-006-007.md).
 
 ## Tahap berikutnya
 
-**RPS-006** (landing, arah visual dan kerangka frontend). Kerjakan satu tiket per tahap.
+**RPS-008** (booking saya, detail dan batal). Kerjakan satu tiket per tahap.

@@ -1,4 +1,5 @@
 import { createHash, randomUUID } from 'node:crypto';
+import { bookingQuoteId } from '../lib/booking-quote.js';
 import { createBookingReference } from '../lib/booking-reference.js';
 import { HttpError } from '../lib/http-error.js';
 import { quoteTotal } from '../lib/money.js';
@@ -16,8 +17,9 @@ import { withWorkspaceAccess } from './workspace-access.js';
 
 // Hash payload ternormalisasi tanpa idempotencyKey; dipakai membedakan retry dan payload baru.
 function hashRequest(input) {
-  const { unitId, date, startTime, durationMinutes, customerName, phone } = input;
-  const payload = JSON.stringify([unitId, date, startTime, durationMinutes, customerName, phone]);
+  const { unitId, date, startTime, durationMinutes, customerName, phone, quoteId } = input;
+  const fields = [unitId, date, startTime, durationMinutes, customerName, phone];
+  const payload = JSON.stringify(quoteId === undefined ? fields : [...fields, quoteId]);
   return createHash('sha256').update(payload).digest('hex');
 }
 
@@ -84,8 +86,17 @@ function buildBooking({ auth, input, unit, slot, now, reference }) {
   };
 }
 
+function assertQuote(auth, input, unit) {
+  const current = bookingQuoteId(auth.workspaceId, unit, input.durationMinutes);
+  if (input.quoteId !== undefined && input.quoteId !== current) {
+    const message = 'Tarif atau unit berubah. Tinjau harga terbaru lalu konfirmasi lagi.';
+    throw new HttpError(409, 'QUOTE_CHANGED', message);
+  }
+}
+
 function insertNewBooking(database, auth, input, requestHash, now) {
   const { unit, slot } = assertBookableSlot(database, auth.workspaceId, input, now);
+  assertQuote(auth, input, unit);
   const reference = uniqueReference(database, auth.workspaceId);
   const booking = buildBooking({ auth, input, unit, slot, now, reference });
   insertBooking(database, booking);

@@ -1,4 +1,5 @@
 import { withWorkspaceReadAccess } from './workspace-access.js';
+import { bookingQuoteId } from '../lib/booking-quote.js';
 import { HttpError } from '../lib/http-error.js';
 import { quoteTotal } from '../lib/money.js';
 import { bookableDateRange, describeSlot, isBookableDate, slotStarts } from '../lib/schedule.js';
@@ -43,7 +44,7 @@ export function loadDayIntervals(database, workspaceId, unit, date) {
   };
 }
 
-function buildResponse({ unit, query, now, intervals }) {
+function buildResponse({ workspaceId, unit, query, now, intervals }) {
   const context = { now, unitActive: unit.is_active === 1, ...intervals };
   const slots = slotStarts(query.date, query.durationMinutes).map((start) =>
     describeSlot(start, query.durationMinutes, context),
@@ -57,6 +58,7 @@ function buildResponse({ unit, query, now, intervals }) {
     durationMinutes: query.durationMinutes,
     unit: toUnitView(unit),
     quote: {
+      id: bookingQuoteId(workspaceId, unit, query.durationMinutes),
       hourlyRate: unit.hourly_rate,
       durationMinutes: query.durationMinutes,
       total: quoteTotal(unit.hourly_rate, query.durationMinutes),
@@ -72,6 +74,6 @@ export function getAvailability(database, auth, query, now = new Date()) {
     const workspaceId = current.workspaceId;
     const unit = findUnitOrThrow(database, workspaceId, query.unitId);
     const intervals = loadDayIntervals(database, workspaceId, unit, query.date);
-    return buildResponse({ unit, query, now, intervals });
+    return buildResponse({ workspaceId, unit, query, now, intervals });
   });
 }

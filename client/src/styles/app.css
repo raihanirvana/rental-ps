@@ -1,0 +1,169 @@
+/* Shell aplikasi setelah masuk demo: header ringan, nav per peran, status layar. */
+.app-header {
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
+}
+.app-header .site-header {
+  min-height: 83px;
+  flex-wrap: wrap;
+  row-gap: 8px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.app-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  font-size: 13px;
+  margin-right: auto;
+  margin-left: 32px;
+}
+.app-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.app-nav a:hover {
+  color: var(--blue);
+}
+.app-nav a[aria-current='page'] {
+  color: var(--blue);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 8px;
+}
+.account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+}
+.demo-bar {
+  background: #e5eaf3;
+  color: #42516a;
+  font-size: 12px;
+}
+.demo-bar .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  padding-top: 9px;
+  padding-bottom: 9px;
+}
+.demo-bar strong {
+  color: var(--ink);
+}
+.page {
+  padding-top: 38px;
+  padding-bottom: 64px;
+}
+.page-notice {
+  margin-top: 20px;
+}
+.page-intro h1 {
+  font-size: 50px;
+}
+.page-intro p {
+  color: var(--muted);
+  margin-top: 8px;
+  font-size: 13px;
+  max-width: 560px;
+}
+.panel {
+  margin-top: 28px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 24px;
+}
+.panel h2 {
+  font:
+    700 17px/1.4 Manrope,
+    sans-serif;
+  letter-spacing: -0.02em;
+}
+.panel p {
+  color: var(--muted);
+  margin-top: 6px;
+  font-size: 13px;
+  max-width: 620px;
+}
+.unit-list {
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+}
+.unit-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  font-size: 13px;
+}
+.unit-list strong {
+  white-space: nowrap;
+}
+.unit-list .price {
+  font-size: 13px;
+  letter-spacing: 0;
+  text-align: right;
+}
+.status-screen {
+  max-width: 560px;
+  padding-top: 64px;
+  padding-bottom: 80px;
+}
+.status-screen h1 {
+  font-size: 50px;
+}
+.status-screen p {
+  color: var(--muted);
+  margin-top: 14px;
+  font-size: 14px;
+}
+.status-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 20px;
+  margin-top: 26px;
+}
+.status-screen .notice {
+  margin-top: 20px;
+}
+@media (max-width: 1000px) {
+  .app-nav {
+    order: 3;
+    width: 100%;
+    margin-left: 0;
+  }
+}
+@media (max-width: 700px) {
+  .app-header .site-header {
+    min-height: 76px;
+  }
+  .app-nav {
+    gap: 0 18px;
+    font-size: 12px;
+  }
+  .account-actions .role-label {
+    display: none;
+  }
+  .page {
+    padding-top: 26px;
+  }
+  .page-intro h1,
+  .status-screen h1 {
+    font-size: 43px;
+  }
+  .status-screen {
+    padding-top: 40px;
+  }
+}
