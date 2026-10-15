@@ -7,24 +7,28 @@ import { SignInRequired, WrongRoleScreen } from './pages/AccessPages.jsx';
 import { AgendaPage } from './pages/AgendaPage.jsx';
 import { BookingDetailPage } from './pages/BookingDetailPage.jsx';
 import { BookingPage } from './pages/BookingPage.jsx';
-import { DestinationPage } from './pages/DestinationPage.jsx';
 import { LandingPage } from './pages/LandingPage.jsx';
 import { LoadingScreen, NotFoundPage, SessionErrorScreen } from './pages/StatusPages.jsx';
 import { MyBookingsPage } from './pages/MyBookingsPage.jsx';
 import { SessionProvider } from './session/SessionProvider.jsx';
+import { UnitsPage } from './pages/UnitsPage.jsx';
+import { SettingsPage } from './pages/SettingsPage.jsx';
 
 const pages = {
   booking: BookingPage,
   'my-bookings': MyBookingsPage,
   'booking-detail': BookingDetailPage,
   agenda: AgendaPage,
+  units: UnitsPage,
+  settings: SettingsPage,
 };
 
 // Halaman di-mount ulang per ruang demo + peran, sehingga respons dari sesi sebelumnya
 // (mis. booking yang selesai setelah logout/ganti peran) tidak pernah ditampilkan.
 function RoutePage({ route, location, session }) {
-  const Page = pages[route.page] ?? DestinationPage;
-  const key = `${session.workspace.createdAt}:${session.startedAt}:${route.page}`;
+  const Page = pages[route.page];
+  const { createdAt, dataVersion } = session.workspace;
+  const key = `${createdAt}:${dataVersion}:${session.startedAt}:${route.page}`;
   return (
     <Page key={key} page={route.page} params={route.params} searchParams={location.searchParams} />
   );

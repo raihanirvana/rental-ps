@@ -14,3 +14,22 @@ export function findSettings(database, workspaceId) {
     )
     .get(workspaceId);
 }
+
+const updateSettingsSql = `
+  UPDATE business_settings
+  SET business_name = $businessName, address = $address, contact_note = $contactNote,
+    updated_at = $updatedAt
+  WHERE workspace_id = $workspaceId`;
+
+export function updateSettingsRow(database, settings) {
+  database.prepare(updateSettingsSql).run(settings);
+}
+
+export function findSettingsRow(database, workspaceId) {
+  return database
+    .prepare(
+      `SELECT business_name, address, contact_note, updated_at FROM business_settings
+       WHERE workspace_id = ?`,
+    )
+    .get(workspaceId);
+}

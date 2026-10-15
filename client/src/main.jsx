@@ -8,6 +8,7 @@ import './styles/app.css';
 import './styles/booking.css';
 import './styles/my-bookings.css';
 import './styles/agenda.css';
+import './styles/units.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

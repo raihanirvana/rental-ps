@@ -8,6 +8,7 @@ import {
   isCurrentSessionRevision,
   sessionRevision,
 } from '../lib/session-revision.js';
+import { useDataVersionWatch } from './useDataVersionWatch.js';
 import { useSessionExpiry } from './useSessionExpiry.js';
 
 const loadingState = { status: 'loading', session: null, error: null, notice: null };
@@ -120,6 +121,18 @@ function useSessionActions(state, setState, reload, runtime) {
   return { startSession, signOut };
 }
 
+function applyVersion(current, dataVersion, expected) {
+  if (current.session !== expected || !expected || dataVersion <= expected.workspace.dataVersion) {
+    return current;
+  }
+  const workspace = { ...current.session.workspace, dataVersion };
+  return {
+    ...current,
+    session: { ...current.session, workspace },
+    notice: sessionNotices.resetDone,
+  };
+}
+
 export function useSessionState() {
   const [state, setState] = useState(loadingState);
   const runtime = useRef({ busy: false, controller: null });
@@ -128,10 +141,15 @@ export function useSessionState() {
   useUnauthorizedReset(setState);
   const markExpired = useCallback(() => setState(signedOut(sessionNotices.expired)), []);
   useSessionExpiry(state.session, markExpired);
+  useDataVersionWatch(state.session, setState, runtime);
   const actions = useSessionActions(state, setState, reload, runtime);
   const dismissNotice = useCallback(
     () => setState((current) => ({ ...current, notice: null })),
     [],
   );
-  return { ...state, ...actions, reload, dismissNotice };
+  // Reset di tab ini: versi baru dari respons server langsung dipakai (halaman di-mount ulang).
+  const applyDataVersion = useCallback((dataVersion, expected) => {
+    setState((current) => applyVersion(current, dataVersion, expected));
+  }, []);
+  return { ...state, ...actions, reload, dismissNotice, applyDataVersion };
 }

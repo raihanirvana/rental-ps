@@ -10,6 +10,14 @@ export const sessionNotices = {
     tone: 'info',
     message: 'Sesi demo tidak lagi berlaku. Mulai demo lagi untuk melanjutkan.',
   },
+  dataReset: {
+    tone: 'info',
+    message: 'Data ruang demo sudah direset. Tampilan dimuat ulang dengan data contoh terbaru.',
+  },
+  resetDone: {
+    tone: 'success',
+    message: 'Data demo dikembalikan ke contoh awal. Sesi dan masa berlaku ruang demo tetap.',
+  },
   signedOut: {
     tone: 'success',
     message: 'Kamu sudah keluar. Data ruang demo tadi sudah dihapus.',

@@ -1,6 +1,7 @@
 import { HttpError } from '../lib/http-error.js';
 import { clearSessionCookie, readSessionToken } from '../lib/session-cookie.js';
 import { demoRoles, resolveSessionByToken } from '../services/session-resolver.js';
+import { trackDataVersion } from './data-version.js';
 
 const sessionProblems = {
   missing: { code: 'UNAUTHENTICATED', message: 'Masuk demo terlebih dahulu.' },
@@ -12,7 +13,7 @@ const sessionProblems = {
 // Mengisi request.auth dari cookie. Workspace dan peran hanya berasal dari tabel sessions,
 // tidak pernah dari body, query atau header lain.
 export function loadSession(database) {
-  return (request, _response, next) => {
+  return (request, response, next) => {
     const token = readSessionToken(request);
     request.sessionToken = token ?? null;
     request.auth = null;
@@ -22,6 +23,11 @@ export function loadSession(database) {
       request.auth = result.auth ?? null;
       request.authProblem = result.problem ?? null;
     }
+    // Versi data workspace (naik saat reset) agar tab lain bisa mendeteksi dan memuat ulang.
+    if (request.auth) {
+      response.set('X-Data-Version', String(request.auth.dataVersion));
+    }
+    trackDataVersion(request, response);
     next();
   };
 }

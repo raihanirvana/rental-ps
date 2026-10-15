@@ -9,6 +9,7 @@ import { createBookingRouter } from './routes/bookings.js';
 import { createCatalogRouter } from './routes/catalog.js';
 import { createHealthRouter } from './routes/health.js';
 import { createOwnerRouter } from './routes/owner.js';
+import { createSettingsRouter } from './routes/settings.js';
 import { createSessionRouter } from './routes/session.js';
 
 // Respons API berisi data sesi/workspace, jadi tidak boleh disimpan cache.
@@ -26,6 +27,7 @@ function mountApi(app, database) {
   app.use('/api', createCatalogRouter(database));
   app.use('/api', createBookingRouter(database));
   app.use('/api', createOwnerRouter(database));
+  app.use('/api', createSettingsRouter(database));
   app.use('/api', apiNotFound);
 }
 

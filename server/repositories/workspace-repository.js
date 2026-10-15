@@ -27,3 +27,26 @@ export function deleteWorkspace(database, workspaceId) {
 export function deleteExpiredWorkspaces(database, nowIso) {
   return database.prepare('DELETE FROM workspaces WHERE expires_at <= ?').run(nowIso).changes;
 }
+
+// Urutan mengikuti foreign key: key idempotensi → booking/blok → unit → pengaturan.
+// Sesi dan baris workspace (masa berlaku) tidak disentuh.
+const clearStatements = [
+  'DELETE FROM booking_requests WHERE workspace_id = ?',
+  'DELETE FROM bookings WHERE workspace_id = ?',
+  'DELETE FROM unit_blocks WHERE workspace_id = ?',
+  'DELETE FROM units WHERE workspace_id = ?',
+  'DELETE FROM business_settings WHERE workspace_id = ?',
+];
+
+export function clearWorkspaceData(database, workspaceId) {
+  for (const sql of clearStatements) {
+    database.prepare(sql).run(workspaceId);
+  }
+}
+
+export function bumpDataVersion(database, workspaceId) {
+  database
+    .prepare('UPDATE workspaces SET data_version = data_version + 1, seeded_at = NULL WHERE id = ?')
+    .run(workspaceId);
+  return findWorkspace(database, workspaceId).data_version;
+}

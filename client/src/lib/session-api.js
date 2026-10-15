@@ -1,7 +1,7 @@
 import { apiRequest } from './api.js';
 
 export function getSession(signal) {
-  return apiRequest('/session', { signal, notifyUnauthorized: false });
+  return apiRequest('/session', { signal, notifyUnauthorized: false, observeDataVersion: false });
 }
 
 // Tanpa sesi aktif membuat ruang demo baru; dengan sesi aktif mengganti peran di

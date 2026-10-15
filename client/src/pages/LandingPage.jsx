@@ -12,7 +12,10 @@ import { useSession } from '../hooks/useSession.js';
 export function LandingPage() {
   const { session, notice, dismissNotice } = useSession();
   const demo = useDemoStart();
-  const catalog = useCatalog(session ? `${session.role}:${session.startedAt}` : 'public');
+  const catalogKey = session
+    ? `${session.role}:${session.startedAt}:${session.workspace.dataVersion}`
+    : 'public';
+  const catalog = useCatalog(catalogKey);
   const businessName = catalog.catalog?.business.businessName ?? 'Sesi Play';
   return (
     <div className="wrap">

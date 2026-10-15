@@ -27,6 +27,16 @@ const triggerErrors = {
     code: 'INVALID_STATUS',
     message: 'Status booking tidak bisa diubah.',
   },
+  UNIT_LIMIT_REACHED: {
+    status: 409,
+    code: 'UNIT_LIMIT_REACHED',
+    message: 'Maksimal 20 unit per ruang demo.',
+  },
+  'units.workspace_id, units.name': {
+    status: 409,
+    code: 'UNIT_NAME_TAKEN',
+    message: 'Nama unit sudah dipakai di ruang demo ini.',
+  },
   BOOKING_IMMUTABLE: {
     status: 409,
     code: 'BOOKING_IMMUTABLE',

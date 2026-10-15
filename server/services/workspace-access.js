@@ -8,6 +8,7 @@ function currentAuth(database, auth, roles) {
     const code = current.problem === 'expired' ? 'SESSION_EXPIRED' : 'UNAUTHENTICATED';
     throw new HttpError(401, code, 'Sesi berubah atau berakhir. Masuk demo lagi.');
   }
+  auth.dataVersion = current.auth.dataVersion;
   if (!roles.includes(current.auth.role)) {
     throw new HttpError(403, 'FORBIDDEN', 'Peran ini tidak memiliki akses ke perubahan tersebut.');
   }

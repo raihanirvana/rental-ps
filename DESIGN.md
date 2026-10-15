@@ -341,3 +341,23 @@ error yang dapat diulang dengan key sama; tidak berpindah ke konfirmasi kosong. 
 - Ponsel: daftar kronologis seluruh item. Filter tanggal (‹ › Hari ini), unit dan status
   disimpan di URL. Ringkasan satu baris + catatan "Bukan pendapatan diterima".
 - Tombol "Tambah booking" pada prototype belum dibuat (bukan kriteria RPS-009).
+
+### Implementasi RPS-010 (unit & jadwal)
+
+- Dua bagian bertumpuk: Unit dan Blok jadwal. Desktop: daftar ringan di kiri, form di panel
+  putih 360px di kanan; ≤1000px satu kolom. Tombol baris memakai teks tersembunyi
+  ("Ubah PS4 A") agar jelas bagi pembaca layar.
+- Form unit dipakai untuk tambah dan ubah (judul berganti "Ubah PS5 A"); nonaktif lewat dialog
+  konfirmasi, penolakan server tampil di dialog. Hapus blok lewat dialog konfirmasi.
+- Pilihan jam blok berupa select 30 menit dalam jam buka; tanggal dibatasi horizon server.
+
+### Implementasi RPS-011 (pengaturan & reset)
+
+- Dua baris panel: form identitas + pratinjau tersimpan (teks biasa, markup tidak dijalankan),
+  lalu panel reset (garis merah muda, tombol danger) + aturan jadwal tetap (read-only).
+- Reset memakai dialog "Kembalikan data contoh?" sesuai §9; setelah berhasil, notice sesi
+  "Data demo dikembalikan ke contoh awal…" dan semua halaman di-mount ulang.
+- Tab lain menampilkan notice "Data ruang demo sudah direset…" saat aktif kembali atau saat
+  respons API membawa `X-Data-Version` yang lebih tinggi. Pemeriksaan sesi dibatasi satu request;
+  respons dari sesi/versi lama tidak mengembalikan state yang sudah ditinggalkan. Landing juga
+  memuat ulang katalog saat versi meningkat.

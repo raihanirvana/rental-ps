@@ -1,8 +1,8 @@
 # Sesi Play — demo booking rental PlayStation
 
 Proyek portfolio dan contoh jasa pembuatan website untuk bisnis rental PS.
-Tahap saat ini: **RPS-009 selesai** (alur pelanggan + agenda pemilik dan penyelesaian sesi).
-Pengelolaan unit/blok dan pengaturan/reset belum dibangun di UI.
+Tahap saat ini: **RPS-011 selesai** (seluruh fitur demo pelanggan dan pemilik).
+Berikutnya integrasi/keamanan (RPS-012) dan deployment (RPS-013).
 
 Model yang sudah dipilih pemilik: pelanggan **main di tempat**, booking unit PS/bilik
 per jam. Model dibawa pulang/sewa harian berada di luar cakupan MVP.
@@ -130,6 +130,15 @@ Migrasi yang sudah diterapkan tidak boleh diubah; tambahkan file baru.
   bukan pendapatan diterima.
 - `PATCH /api/owner/bookings/:id/status` body `{ "status": "completed" }` (owner) → hanya
   confirmed yang sudah berakhir; terminal tidak berubah (409).
+- `GET/POST /api/owner/units`, `PATCH /api/owner/units/:id` (owner) → unit tanpa hapus fisik;
+  nonaktif ditolak 409 bila masih ada booking yang belum berakhir; maksimal 20 unit.
+- `GET/POST /api/owner/blocks`, `DELETE /api/owner/blocks/:id` (owner) → blok grid 30 menit
+  dalam jam buka/horizon; bentrok booking/blok 409.
+- `GET /api/settings` (sesi) / `PATCH /api/settings` (owner) → nama, alamat, teks kontak usaha
+  contoh; aturan jadwal tetap.
+- `POST /api/demo/reset` body `{ "confirm": true }` (owner) → atomik mengembalikan data contoh,
+  menghapus key idempotensi dan menaikkan `dataVersion`; sesi dan masa berlaku tetap.
+- Respons bersesi membawa header `X-Data-Version`; tab lain memuat ulang saat versi berubah.
 - Error JSON: `{ error: { code, message, fields?, requestId } }`; 503 `DATABASE_BUSY` + `Retry-After`.
 - Path `/api/*` lain → 404 JSON `{ "error": { "code": "NOT_FOUND", "message", "requestId" } }`,
   tidak pernah HTML SPA.
@@ -158,8 +167,8 @@ Repo Git: `https://github.com/raihanirvana/rental-ps.git`. `.gitignore` mengecua
 
 Hasil review: [RPS-001–003](docs/REVIEW-RPS-001-003.md),
 [RPS-004–005](docs/REVIEW-RPS-004-005.md), [RPS-006–007](docs/REVIEW-RPS-006-007.md)
-dan [RPS-008–009](docs/REVIEW-RPS-008-009.md).
+[RPS-008–009](docs/REVIEW-RPS-008-009.md) dan [RPS-010–011](docs/REVIEW-RPS-010-011.md).
 
 ## Tahap berikutnya
 
-**RPS-010** (pengelolaan unit dan blok jadwal). Kerjakan satu tiket per tahap.
+**RPS-012** (integrasi, keamanan dan kesiapan demo). Kerjakan satu tiket per tahap.

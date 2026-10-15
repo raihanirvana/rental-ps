@@ -14,6 +14,20 @@ export class ApiError extends Error {
 }
 
 const unauthorizedListeners = new Set();
+const dataVersionListeners = new Set();
+
+// Dipanggil saat respons membawa X-Data-Version (naik setelah reset di tab mana pun).
+export function onDataVersion(listener) {
+  dataVersionListeners.add(listener);
+  return () => dataVersionListeners.delete(listener);
+}
+
+function announceDataVersion(response, revision) {
+  const version = Number(response.headers.get('x-data-version'));
+  if (Number.isInteger(version) && version > 0 && isCurrentSessionRevision(revision)) {
+    dataVersionListeners.forEach((listener) => listener(version));
+  }
+}
 
 // Dipanggil pada setiap 401 agar UI langsung mengosongkan sesi yang tidak berlaku.
 export function onUnauthorized(listener) {
@@ -92,6 +106,9 @@ async function sendRequest(path, { method = 'GET', body, signal }) {
 export async function apiRequest(path, options = {}) {
   const revision = sessionRevision();
   const response = await sendRequest(path, options);
+  if (options.observeDataVersion !== false) {
+    announceDataVersion(response, revision);
+  }
   const payload = await readPayload(response);
   if (response.ok) {
     return payload;

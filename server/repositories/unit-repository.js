@@ -21,3 +21,34 @@ export function findUnit(database, workspaceId, unitId) {
     .prepare(`SELECT ${unitColumns} FROM units WHERE workspace_id = ? AND id = ?`)
     .get(workspaceId, unitId);
 }
+
+export function countUnits(database, workspaceId) {
+  return database.prepare('SELECT count(*) AS n FROM units WHERE workspace_id = ?').get(workspaceId)
+    .n;
+}
+
+// Nama unik per workspace tanpa membedakan huruf besar/kecil (kolom COLLATE NOCASE).
+export function findUnitByName(database, workspaceId, name) {
+  return database
+    .prepare('SELECT id FROM units WHERE workspace_id = ? AND name = ?')
+    .get(workspaceId, name);
+}
+
+const updateUnitSql = `
+  UPDATE units SET name = $name, kind = $kind, hourly_rate = $hourlyRate,
+    is_active = $isActive, updated_at = $now
+  WHERE workspace_id = $workspaceId AND id = $id`;
+
+export function updateUnitRow(database, unit) {
+  database.prepare(updateUnitSql).run(unit);
+}
+
+// Booking non-cancelled yang belum berakhir menahan unit tetap aktif.
+export function countPendingBookings(database, { workspaceId, unitId, now }) {
+  return database
+    .prepare(
+      `SELECT count(*) AS n FROM bookings WHERE workspace_id = ? AND unit_id = ?
+       AND status <> 'cancelled' AND ends_at > ?`,
+    )
+    .get(workspaceId, unitId, now).n;
+}

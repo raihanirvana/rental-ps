@@ -15,3 +15,35 @@ const blockIntervalsSql = `
 export function listBlockIntervals(database, { workspaceId, unitId, from, to }) {
   return database.prepare(blockIntervalsSql).all(workspaceId, unitId, to, from);
 }
+
+const blockColumns = `
+  block.id, block.unit_id, block.source, block.starts_at, block.ends_at, block.note,
+  unit.name AS unit_name`;
+
+export function findBlock(database, workspaceId, blockId) {
+  return database
+    .prepare(
+      `SELECT ${blockColumns} FROM unit_blocks AS block
+       JOIN units AS unit ON unit.id = block.unit_id
+       WHERE block.workspace_id = ? AND block.id = ?`,
+    )
+    .get(workspaceId, blockId);
+}
+
+// Blok yang belum berakhir, untuk halaman Unit & jadwal.
+export function listUpcomingBlocks(database, workspaceId, nowIso) {
+  return database
+    .prepare(
+      `SELECT ${blockColumns} FROM unit_blocks AS block
+       JOIN units AS unit ON unit.id = block.unit_id
+       WHERE block.workspace_id = ? AND block.ends_at > ?
+       ORDER BY block.starts_at, unit.name`,
+    )
+    .all(workspaceId, nowIso);
+}
+
+export function deleteBlockRow(database, workspaceId, blockId) {
+  return database
+    .prepare('DELETE FROM unit_blocks WHERE workspace_id = ? AND id = ?')
+    .run(workspaceId, blockId).changes;
+}
