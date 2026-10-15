@@ -1,0 +1,40 @@
+{
+  "name": "sesi-play",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Demo booking rental PlayStation di tempat (per jam).",
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "dev": "concurrently --kill-others --names web,api \"npm:dev:web\" \"npm:dev:api\"",
+    "dev:web": "vite --config client/vite.config.js",
+    "dev:api": "node --watch server/index.js",
+    "build": "vite build --config client/vite.config.js",
+    "start": "node server/index.js",
+    "db:migrate": "node scripts/migrate.js",
+    "db:seed": "node scripts/seed.js",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix --max-warnings 0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "npm run format:check && npm run lint && npm run build"
+  },
+  "dependencies": {
+    "express": "5.3.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@vitejs/plugin-react": "5.2.0",
+    "concurrently": "9.2.5",
+    "eslint": "10.12.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "eslint-plugin-react-refresh": "0.4.26",
+    "globals": "16.5.0",
+    "prettier": "3.9.10",
+    "vite": "7.3.7"
+  }
+}
